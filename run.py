@@ -40,12 +40,18 @@ def plotRastrigin(range):
 
 
 def main():
-    range = 5
-    particles = PSO(range)
-    plotRosenbrock(range)
+    r = 5
+    particles = PSO(r, rosenbrock)
+    plotRosenbrock(r)
     for particle in particles.particles:
-        plt.plot(particle.x, particle.y, 'wo')
-    plt.show()
+        plt.plot(particle.x, particle.y, 'ro')
+
+    for iteration in range(10):
+        plotRosenbrock(r)
+        particles.move(0.9)
+        for particle in particles.particles:
+            plt.plot(particle.x, particle.y, 'wo')
+        plt.show()
 
 
 if __name__ == '__main__':
