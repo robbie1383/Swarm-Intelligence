@@ -27,9 +27,11 @@ def plotFunction(range, evaluation):
     plt.contourf(X, Y, Z, steps)
     plt.colorbar()
 
+
 def findMinimum(r, evaluation, iterations):
     filenames = []
     particles = PSO(r, evaluation)
+
     # Plot starting points
     plotFunction(r, evaluation)
     for particle in particles.particles:
@@ -40,10 +42,11 @@ def findMinimum(r, evaluation, iterations):
     plt.close()
 
     a = 0.9
+    step = (0.9 - 0.4)/iterations
+
+    # Plot every iteration
     for iteration in range(iterations):
         plotFunction(r, evaluation)
-        #for particle in particles.particles:
-            #plt.plot(particle.x, particle.y, 'bo')
         particles.move(a)
         for particle in particles.particles:
             plt.plot(particle.x, particle.y, 'wo')
@@ -51,13 +54,16 @@ def findMinimum(r, evaluation, iterations):
         filenames.append(filename)
         plt.savefig(filename)
         plt.close()
+        a -= step
 
     return filenames
 
 
 def main():
-    filenames = findMinimum(5, rosenbrock, 10)
+    # Create pictures of every iteration
+    filenames = findMinimum(5, rastrigin, 20)
 
+    # Create GIF
     with imageio.get_writer('POS.gif', mode='I') as writer:
         for filename in filenames:
             image = imageio.imread(filename)
@@ -67,5 +73,7 @@ def main():
     for filename in set(filenames):
         os.remove(filename)
 
+
 if __name__ == '__main__':
     main()
+

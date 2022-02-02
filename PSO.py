@@ -11,6 +11,7 @@ class PSO:
         self.neighbours = []
 
     def updateNeighbours(self):
+        # Compute all distances
         distances = []
         for i in self.particles:
             row = []
@@ -18,6 +19,7 @@ class PSO:
                 row.append(distance(i, j))
             distances.append(row)
 
+        # Find closest neighbours
         for i in range(len(self.particles)):
             toAll = distances[i].copy()
             toAll.sort()
@@ -36,7 +38,7 @@ class PSO:
             for i in range(1, self.neighbourHoodSize):
                 if self.particles[self.neighbours[particleIndex][i]].f < self.particles[gbest].f:
                     gbest = self.neighbours[particleIndex][i]
-            # Move
+            # Move based on PSO rules
             self.particles[particleIndex].move(self.particles[gbest], a)
 
 """
