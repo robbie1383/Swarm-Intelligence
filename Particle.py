@@ -5,9 +5,11 @@ class Particle:
 
     def __init__(self, r, evaluation):
         self.id = 0
+        self.r = r
+        self.maxv = 0.5
         self.x = np.random.uniform(-r, r)
         self.y = np.random.uniform(-r, r)
-        self.v = [np.random.uniform(-r, r),np.random.uniform(-r, r)]
+        self.v = [np.random.uniform(-self.maxv, self.maxv), np.random.uniform(-self.maxv, self.maxv)]
         self.f = evaluation(self.x, self.y)
         self.pbest = [self.x, self.y]
         self.evaluation = evaluation
@@ -22,10 +24,9 @@ class Particle:
         c = 2
         r = np.random.random()
         nextv = [a * self.v[0] + b * r * (self.pbest[0] - self.x) + c * r * (gbest.x - self.x), a * self.v[1] + b * r * (self.pbest[1] - self.y) + c * r * (gbest.y - self.y)]
-        if nextv[0] < -r : nextv[0] = -r
-        if nextv[1] < -r: nextv[1] = -r
-        if nextv[0] > r : nextv[0] = r
-        if nextv[1] > r: nextv[1] = r
+        nextv[0] = max(-self.maxv, min(self.maxv, nextv[0]))
+        nextv[1] = max(-self.maxv, min(self.maxv, nextv[1]))
         self.x += nextv[0]
         self.y += nextv[1]
         self.v = nextv
+

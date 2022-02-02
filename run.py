@@ -1,6 +1,8 @@
 from matplotlib import pyplot as plt
 import numpy as np
 from PSO import PSO
+import imageio
+import os
 
 
 def rosenbrock(x, y):
@@ -13,11 +15,11 @@ def rastrigin(x, y):
     return 10 * 2 + (x ** 2 - 10 * np.cos(2 * np.pi * x)) + (y ** 2 - 10 * np.cos(2 * np.pi * y))
 
 
-def plotRosenbrock(range):
+def plotFunction(range, evaluation):
     steps = 70
     x = np.linspace(-range, range, steps)
     y = np.linspace(-range, range, steps)
-    z = np.array([rosenbrock(i, j) for j in y for i in x])
+    z = np.array([evaluation(i, j) for j in y for i in x])
 
     X, Y = np.meshgrid(x, y)
     Z = z.reshape(steps, steps)
@@ -25,34 +27,45 @@ def plotRosenbrock(range):
     plt.contourf(X, Y, Z, steps)
     plt.colorbar()
 
+def findMinimum(r, evaluation, iterations):
+    filenames = []
+    particles = PSO(r, evaluation)
+    # Plot starting points
+    plotFunction(r, evaluation)
+    for particle in particles.particles:
+        plt.plot(particle.x, particle.y, 'wo')
+    filename = f'start.png'
+    filenames.append(filename)
+    plt.savefig(filename)
+    plt.close()
 
-def plotRastrigin(range):
-    steps = 70
-    x = np.linspace(-range, range, steps)
-    y = np.linspace(-range, range, steps)
-    z = np.array([rastrigin(i, j) for j in y for i in x])
+    a = 0.9
+    for iteration in range(iterations):
+        plotFunction(r, evaluation)
+        #for particle in particles.particles:
+            #plt.plot(particle.x, particle.y, 'bo')
+        particles.move(a)
+        for particle in particles.particles:
+            plt.plot(particle.x, particle.y, 'wo')
+        filename = f'{iteration}.png'
+        filenames.append(filename)
+        plt.savefig(filename)
+        plt.close()
 
-    X, Y = np.meshgrid(x, y)
-    Z = z.reshape(steps, steps)
-
-    plt.contourf(X, Y, Z, steps)
-    plt.colorbar()
+    return filenames
 
 
 def main():
-    r = 5
-    particles = PSO(r, rosenbrock)
-    plotRosenbrock(r)
-    for particle in particles.particles:
-        plt.plot(particle.x, particle.y, 'ro')
+    filenames = findMinimum(5, rosenbrock, 10)
 
-    for iteration in range(10):
-        plotRosenbrock(r)
-        particles.move(0.9)
-        for particle in particles.particles:
-            plt.plot(particle.x, particle.y, 'wo')
-        plt.show()
+    with imageio.get_writer('POS.gif', mode='I') as writer:
+        for filename in filenames:
+            image = imageio.imread(filename)
+            writer.append_data(image)
 
+    # Remove files
+    for filename in set(filenames):
+        os.remove(filename)
 
 if __name__ == '__main__':
     main()
