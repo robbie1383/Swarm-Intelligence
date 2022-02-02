@@ -4,25 +4,27 @@ from Particle import Particle
 class PSO:
 
     def __init__(self, r):
-        self.particles = []
-        for i in range(20):
-            p = Particle()
-            p.id = i
-            self.particles.append(p)
+        self.particles = [Particle(r) for i in range(20)]
         self.neighbourHoodSize = 3
+        self.neighbours = []
 
     def update_neighbours(self):
-        for p1 in self.particles:
-            long = 0
-            if len(p1.neighbours):
-                for n in p1.neighbours:
-                    if self.distance(p1, n) > long:
-                        long = self.distance(p1, n)
-            for p2 in self.particles:
-                if p1.id != p2.id:
-                    if self.distance(p1, p2) < long:
-                        p1.neighbours.pop()
-                        p1.neighbours.append(p2)
+        for i in range(len(self.particles)):  # find neighbours for each Particle i
+            longest = 0
+            for j in range(len(self.particles)):  # compare each neighbour j distance to i
+                if i != j:
+                    if len(self.neighbours) >= i:  # already have neighbours
+                        for p in self.neighbours[i]:
+                            if self.distance(self.particles[i], p) > longest:
+                                longest = self.distance(self.particles[i], p)
+                        if (self.distance(self.particles[i], self.particles[j])) < longest:
+                            self.neighbours[i].pop()
+                            self.neighbours[i].append(j)  # update longest neighbour
+                            longest = self.distance(self.particles[i], self.particles[j])
+                    else:  # first time run, no neighbours
+                        if self.distance(self.particles[i], self.distance(self.particles[j])) > longest:
+                            longest = self.distance(self.particles[i], p)
+                            self.neighbours[i].append(j)
 
     def distance(self, p1: Particle, p2: Particle):
         return ((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2) ** 0.5
