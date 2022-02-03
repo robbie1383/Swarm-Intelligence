@@ -1,3 +1,6 @@
+import os
+
+import imageio
 import matplotlib.pyplot as plt
 import sympy as symp
 import numpy as np
@@ -40,14 +43,16 @@ def findMinimum(function):
     y = symp.Symbol('y')  # same
     eps = 0.001  # precision to find the minima of the function
     maxIter = 100  # max number of interation
-    init_x = 1  # initial x to start GD
-    init_y = 5  # initial y to start BD
+    # init_x = 0.8  # initial x to start GD
+    # init_y = 0.6  # initial y to start BD
+    init_x = np.random.uniform(-5, 5)
+    init_y = np.random.uniform(-5, 5)
     z = function.subs({x: init_x, y: init_y})  # f(x,y) with initial values
     alpha = 0.001  # Learning rate
     condition = 3  # initial condition that will be updated. To stop GD, condition <eps
     iter = 0
     new_z = z
-
+    filenames = []
     while condition > eps and iter < maxIter:
         plt.scatter(init_x, init_y)
         new_x = init_x - alpha * derivatives(function, x, y, init_x, init_y)
@@ -61,9 +66,14 @@ def findMinimum(function):
 
         new_z = z
         iter = iter + 1
+
+        filename = f'{iter}.png'
+        filenames.append(filename)
+        plt.savefig(filename)
         print("x=", round(init_x, 3), "y=", round(init_y, 3), "condition=", round(condition, 3))
-    plt.show()
+    # plt.show()
     print("x=", round(init_x, 3), "y=", round(init_y, 3), "condition=", round(condition, 3))
+    return filenames
 
 
 def plott(function):
@@ -92,11 +102,21 @@ def plott(function):
 
 
 def main():
-    function = rastrigin  # Function we decide to run GD on
+    function = rosenbrock  # Function we decide to run GD on
     plott(function)
     x = symp.Symbol('x')
     y = symp.Symbol('y')
-    findMinimum(function(x, y, symp))
+    # filenames = findMinimum(function(x, y, symp))
+    filenames = findMinimum(function(x, y))
+    # Create GIF
+    with imageio.get_writer('Gradient.gif', mode='I') as writer:
+        for filename in filenames:
+            image = imageio.imread(filename)
+            writer.append_data(image)
+
+    # Remove files
+    for filename in set(filenames):
+        os.remove(filename)
 
 
 if __name__ == '__main__':
