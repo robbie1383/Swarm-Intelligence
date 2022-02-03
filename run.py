@@ -16,7 +16,7 @@ def rastrigin(x, y):
 
 
 def plotFunction(range, evaluation):
-    steps = 70
+    steps = 35
     x = np.linspace(-range, range, steps)
     y = np.linspace(-range, range, steps)
     z = np.array([evaluation(i, j) for j in y for i in x])
@@ -28,21 +28,21 @@ def plotFunction(range, evaluation):
     plt.colorbar()
 
 
-def findMinimum(r, evaluation, iterations):
+def findMinimum(r, evaluation, iterations, function_name, neighbourHoodSize, particle_num):
     filenames = []
-    particles = PSO(r, evaluation)
+    particles = PSO(r, evaluation, neighbourHoodSize, particle_num)
 
     # Plot starting points
     plotFunction(r, evaluation)
     for particle in particles.particles:
         plt.plot(particle.x, particle.y, 'wo')
-    filename = f'start.png'
+    filename = f'{function_name}start.png'
     filenames.append(filename)
     plt.savefig(filename)
     plt.close()
 
-    a = 0.9
-    step = (0.9 - 0.4)/iterations
+    a = 0.2
+    step = (0.9 - 0.4) / iterations
 
     # Plot every iteration
     for iteration in range(iterations):
@@ -50,7 +50,7 @@ def findMinimum(r, evaluation, iterations):
         particles.move(a)
         for particle in particles.particles:
             plt.plot(particle.x, particle.y, 'wo')
-        filename = f'{iteration}.png'
+        filename = f'{function_name}_{iteration}.png'
         filenames.append(filename)
         plt.savefig(filename)
         plt.close()
@@ -60,20 +60,34 @@ def findMinimum(r, evaluation, iterations):
 
 
 def main():
+    range = 5
+    iterations = 20
+    particles = 10
+    neighbours = 5
+
     # Create pictures of every iteration
-    filenames = findMinimum(5, rastrigin, 20)
+    filenames_rosenbrock = findMinimum(range, rosenbrock, iterations, "rosenbrock", neighbours, particles)
+    filenames_rastrigin = findMinimum(range, rastrigin, iterations, "rastrigin", neighbours, particles)
 
     # Create GIF
-    with imageio.get_writer('POS.gif', mode='I') as writer:
-        for filename in filenames:
+    rosenbrock_gif_name = f'rosenbrock_{range}_{iterations}_{particles}_{neighbours}.gif'
+    with imageio.get_writer(rosenbrock_gif_name, mode='I') as writer:
+        for filename in filenames_rosenbrock:
             image = imageio.imread(filename)
             writer.append_data(image)
 
+    rastrigin_gif_name = f'rastrigin_{range}_{iterations}_{particles}_{neighbours}.gif'
+    with imageio.get_writer(rastrigin_gif_name, mode='I') as writer:
+        for filename in filenames_rastrigin:
+            image = imageio.imread(filename)
+            writer.append_data(image)
     # Remove files
-    for filename in set(filenames):
-        os.remove(filename)
+    # for filename in set(filenames_rastrigin):
+    #     os.remove(filename)
+    #
+    # for filename in set(filenames_rosenbrock):
+    #     os.remove(filename)
 
 
 if __name__ == '__main__':
     main()
-

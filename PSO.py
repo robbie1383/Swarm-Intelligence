@@ -7,9 +7,9 @@ def distance(p1: Particle, p2: Particle):
 
 class PSO:
 
-    def __init__(self, r, evaluation):
-        self.particles = [Particle(r, evaluation) for i in range(10)]
-        self.neighbourHoodSize = 3
+    def __init__(self, r, evaluation, neighbourHoodSize, particle_num):
+        self.particles = [Particle(r, evaluation) for i in range(particle_num)]
+        self.neighbourHoodSize = neighbourHoodSize
         self.neighbours = []
 
     def updateNeighbours(self):

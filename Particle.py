@@ -25,7 +25,8 @@ class Particle:
         r = np.random.random()
 
         # Compute next velocity
-        nextv = [a * self.v[0] + b * r * (self.pbest[0] - self.x) + c * r * (gbest.x - self.x), a * self.v[1] + b * r * (self.pbest[1] - self.y) + c * r * (gbest.y - self.y)]
+        nextv = [a * self.v[0] + b * r * (self.pbest[0] - self.x) + c * r * (gbest.x - self.x),
+                 a * self.v[1] + b * r * (self.pbest[1] - self.y) + c * r * (gbest.y - self.y)]
         nextv[0] = max(-self.maxv, min(self.maxv, nextv[0]))
         nextv[1] = max(-self.maxv, min(self.maxv, nextv[1]))
 
@@ -33,4 +34,3 @@ class Particle:
         self.x += nextv[0]
         self.y += nextv[1]
         self.v = nextv
-
